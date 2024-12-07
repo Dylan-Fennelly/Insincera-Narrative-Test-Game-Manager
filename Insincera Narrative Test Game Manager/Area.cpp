@@ -3,9 +3,10 @@
 
 Area::Area(std::string areaName, int entryDetectionChanceWorker,int entryDetectionChanceSoldier, int exitDetectionChanceWorker,int exitDetectionChanceSoldier, std::string areaDescription)
 	:areaName(areaName),
+	areaDescription(areaDescription),
 	entryDetectionChance(std::make_pair(entryDetectionChanceWorker,entryDetectionChanceSoldier)),
-	exitDetectionChance(std::make_pair(exitDetectionChanceWorker, exitDetectionChanceSoldier)),
-	areaDescription(areaDescription)
+	exitDetectionChance(std::make_pair(exitDetectionChanceWorker, exitDetectionChanceSoldier))
+	
 {
 }
 
@@ -36,6 +37,13 @@ void Area::completeInteration(std::string interactionName)
 	interaction->second->completeInteraction();
 }
 
+void Area::addConnectedArea(Area* connectedArea)
+{
+	connectedAreas.emplace_back(connectedArea);
+}
+
+
+
 std::pair<int,int> Area::getEntryDetectionChance()
 {
 	return entryDetectionChance;
@@ -49,4 +57,19 @@ std::pair<int,int> Area::getExitDetectionChance()
 std::string Area::getAreaDescription()
 {
 	return areaDescription;
+}
+
+std::string Area::getAreaName()
+{
+	return this->areaName;
+}
+
+std::vector<Area*> Area::getConnectedAreas()
+{
+	return this->connectedAreas;
+}
+
+std::map<std::string, Interaction*> Area::getInteractions()
+{
+	return this->interactions;
 }

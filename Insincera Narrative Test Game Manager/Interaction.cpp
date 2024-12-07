@@ -37,22 +37,52 @@ std::string Interaction::getInteractionDescription()
 	return interactionDescription;
 }
 
+bool Interaction::getInteractionCompleted()
+{
+	return this->interactionCompleted;
+}
+
+bool Interaction::getIsInteractable()
+{
+	return this->isInteractable;
+}
+
 void Interaction::addExclusiveInteraction(Interaction* exclusiveInteraction)
 {
 	exclusiveInteractions.emplace_back(exclusiveInteraction);
 }
 
-void Interaction::completeInteraction()
+bool Interaction::completeInteraction()
 {
 	if (!isInteractable)
 	{
 		throw std::exception("Interaction is not interactable");
 	}
 	setInteractionCompleted(true);
+	setIsInteractable(false);
+	
+
 	for (auto& interaction : exclusiveInteractions)
 	{
 		interaction->setIsInteractable(false);
 	}
+	//true if the interaction was completed without being caught
+
+
+	// Generate two separate dice rolls
+	int diceRollWorker = rand() % 100 + 1;
+	int diceRollSoldier = rand() % 100 + 1;
+
+	// Check if caught by either group
+	bool caughtByWorker = diceRollWorker <= detectionChance.first;
+	bool caughtBySoldier = diceRollSoldier <= detectionChance.second;
+
+	if (caughtByWorker || caughtBySoldier) {
+		return false; // Player was caught
+	}
+
+	return true; // Interaction completed without being caught
+
 }
 
 void Interaction::setInteractionCompleted(bool interactionCompleted)

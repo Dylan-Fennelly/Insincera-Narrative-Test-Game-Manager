@@ -24,12 +24,18 @@
     <ClCompile Include="Area.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameManger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interaction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Area.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Area.cpp" />
+    <ClCompile Include="GameManger.cpp" />
     <ClCompile Include="Interaction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Area.h" />
+    <ClInclude Include="GameManger.h" />
     <ClInclude Include="Interaction.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

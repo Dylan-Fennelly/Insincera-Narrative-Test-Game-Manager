@@ -17,13 +17,15 @@ public:
 	~Interaction();
 	
 	void addExclusiveInteraction(Interaction* exclusiveInteraction);
-	void completeInteraction();
+	bool completeInteraction();
 
 	//getters
 	std::string getInteractionName();
 	std::pair<int, int> getDetectionChance();
 	int getDangerContribution();
 	std::string getInteractionDescription();
+	bool getInteractionCompleted();
+	bool getIsInteractable();
 
 private:
 	//setters
