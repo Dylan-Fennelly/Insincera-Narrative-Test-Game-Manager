@@ -2,7 +2,7 @@
 #include "Area.h"
 #include "Interaction.h"
 #include <vector>
-class GameManger
+class GameManager
 {
 public :
 	std::vector<Area*> areas;
@@ -11,8 +11,8 @@ public :
 	int culmulativeDanger = 0;
 
 public:
-	GameManger(Area* starterArea);
-	~GameManger();
+	GameManager(Area* starterArea);
+	~GameManager();
 
 	void addArea(Area* area);
 	void addInteraction(Interaction* interaction);
@@ -24,7 +24,8 @@ public:
 	void displayConnectedAreas();
 	void addCulmulativeDanger(int danger);
 	void endGame(bool killed);
-	void moveToCombatArea(Area* areaAfterCombat);
+	void moveToCombatArea(std::string areaAfterCombat);
+	Area* findAreaByString(std::string areaName);
 
 
 	

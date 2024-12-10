@@ -1,7 +1,7 @@
 #include "GameManger.h"
 #include <iostream>
 
-GameManger::GameManger(Area* starterArea)
+GameManager::GameManager(Area* starterArea)
 	:currentArea(starterArea)
 {
 	//we need to add the starter area to the areas vector
@@ -14,21 +14,21 @@ GameManger::GameManger(Area* starterArea)
 	areas.emplace_back(combatArea);
 }
 
-GameManger::~GameManger()
+GameManager::~GameManager()
 {
-	//if the game manger goes out of scope, we need to delete the areas and interactions
-	for (auto& area : areas)
-	{
-		delete area;
-	}
-	for (auto& interaction : interactions)
-	{
-		delete interaction;
-	}
+	////if the game manger goes out of scope, we need to delete the areas and interactions
+	//for (auto& area : areas)
+	//{
+	//	delete area;
+	//}
+	//for (auto& interaction : interactions)
+	//{
+	//	delete interaction;
+	//}
 
 }
 
-void GameManger::addArea(Area* area)
+void GameManager::addArea(Area* area)
 {
 	//always add the combat area to the areas vector
 	Area* combatArea = nullptr;
@@ -48,12 +48,12 @@ void GameManger::addArea(Area* area)
 }
 
 
-void GameManger::addInteraction(Interaction* interaction)
+void GameManager::addInteraction(Interaction* interaction)
 {
 	this->interactions.emplace_back(interaction);
 }
 
-void GameManger::displayAreas()
+void GameManager::displayAreas()
 {
 	auto currentAreaName = currentArea->getAreaName();
 	std::cout << "Current Area: " + currentAreaName << std::endl;
@@ -64,13 +64,13 @@ void GameManger::displayAreas()
 		//the player should not be able to move to the combat area on their own
 		if (area->getAreaName() == "Combat Area")
 		{
-			return;
+			continue   ;
 		}
 		std::cout << area->getAreaName() << std::endl;
 	}
 }
 
-void GameManger::displayInteractions()
+void GameManager::displayInteractions()
 {
 	bool hasInteractable = false;
 	for (auto& interaction : currentArea->getInteractions())
@@ -86,15 +86,16 @@ void GameManger::displayInteractions()
 				<< detectionChance.second << "% by soldiers.\n";
 			
 		}
-		if (!hasInteractable)
-		{
-			std::cout << "No interactions available" << std::endl;
-		}
+		
 		std::cout << std::endl;
+	}
+	if (!hasInteractable)
+	{
+		std::cout << "No interactions available" << std::endl;
 	}
 }
 
-void GameManger::completeInteraction(std::string interactionName)
+void GameManager::completeInteraction(std::string interactionName)
 {
 	// Find the interaction once
 	auto interactionsMap = currentArea->getInteractions();
@@ -123,13 +124,14 @@ void GameManger::completeInteraction(std::string interactionName)
 		{
 			// Enter combat phase if caught
 			moveArea("Combat Area");
+			
 		}
 		addCulmulativeDanger(interaction->getDangerContribution());
 	}
 }
 
-
-void GameManger::moveArea(std::string areaName)
+ 
+void GameManager::moveArea(std::string areaName)
 {
 	//We need to check if the area the player wants to move to is connected to the current area
 	//We also need to check if the risk  of moving and calculate the risk of moving to the new area
@@ -157,7 +159,7 @@ void GameManger::moveArea(std::string areaName)
 				//if player loses, end game
 				std::cout << "Player got caught" << std::endl;
 				//move player to combat area
-				moveArea("Combat Area");
+				moveToCombatArea(areaName);
 				return;
 			}
 			else
@@ -167,18 +169,22 @@ void GameManger::moveArea(std::string areaName)
 			}
 		}
 	}
+	if (areaName == "Combat Area")
+	{
+		currentArea = findAreaByString("Combat Area");
+	}
 	std::cout << "Area not found" << std::endl;
 
 
 }
 
-void GameManger::displayCurrentArea()
+void GameManager::displayCurrentArea()
 {
 	std::cout << currentArea->getAreaName() + ": " + currentArea->getAreaDescription() << std::endl;
 
 }
 
-void GameManger::displayConnectedAreas()
+void GameManager::displayConnectedAreas()
 {
 	for (auto& area : currentArea->getConnectedAreas())
 	{
@@ -186,12 +192,12 @@ void GameManger::displayConnectedAreas()
 	}
 }
 
-void GameManger::addCulmulativeDanger(int danger)
+void GameManager::addCulmulativeDanger(int danger)
 {
 	this->culmulativeDanger += danger;
 }
 
-void GameManger::endGame(bool killed)
+void GameManager::endGame(bool killed)
 {
 	if (killed)
 	{
@@ -215,13 +221,27 @@ void GameManger::endGame(bool killed)
 	std::cout << "Thank you for playing" << std::endl;
 }
 
-void GameManger::moveToCombatArea(Area* areaAfterCombat)
+void GameManager::moveToCombatArea(std::string areaAfterCombat)
 {
 	moveArea("Combat Area");
 	//we need to add the area the player wanted to move to after the combat phase to the connected areas of the combat area
 	//so we need to remove all of the connected areas of the combat area and add the new area
 	auto combatArea = currentArea;
 	combatArea->getConnectedAreas().clear();
-	combatArea->addConnectedArea(areaAfterCombat);
+	combatArea->addConnectedArea(findAreaByString(areaAfterCombat));
 
+}
+ 
+Area* GameManager::findAreaByString(std::string areaName)
+{
+
+	for (auto& area : areas)
+	{
+		if (area->getAreaName() == areaName)
+		{
+			return area;
+		}
+	}
+
+		throw std::exception("Area not found");
 }

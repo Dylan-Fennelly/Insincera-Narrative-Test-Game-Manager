@@ -78,10 +78,10 @@ bool Interaction::completeInteraction()
 	bool caughtBySoldier = diceRollSoldier <= detectionChance.second;
 
 	if (caughtByWorker || caughtBySoldier) {
-		return false; // Player was caught
+		return true; // Player was caught
 	}
 
-	return true; // Interaction completed without being caught
+	return false; // Interaction completed while being caught
 
 }
 
