@@ -5,6 +5,7 @@
 #include "json.hpp"
 int main()
 {
+	//TODO: Get rid of this random starter ,it should be handled by the constructor 
 	Area area("starterArea", 10, 10, 0, 0, "Where the game starts");
 	Interaction escape("Leave the facility", 0, 0, 0, "Leave the facility forever");
 	area.addInteraction(&escape);

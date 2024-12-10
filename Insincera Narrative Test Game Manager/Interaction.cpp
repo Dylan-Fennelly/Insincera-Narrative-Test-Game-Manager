@@ -52,7 +52,7 @@ void Interaction::addExclusiveInteraction(Interaction* exclusiveInteraction)
 {
 	exclusiveInteractions.emplace_back(exclusiveInteraction);
 }
-
+//Todo: this feels messy and the random number generation should be tider, maybe it should be given to a utility class
 bool Interaction::completeInteraction()
 {
 	if (!isInteractable)

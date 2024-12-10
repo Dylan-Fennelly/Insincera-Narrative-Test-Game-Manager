@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "json.hpp"
+//TODO: Fix this constructor to not rely on magic bullshit
 GameManager::GameManager(Area* starterArea)
 	:currentArea(starterArea)
 {
@@ -24,6 +25,7 @@ GameManager::GameManager(Area* starterArea)
 
 GameManager::~GameManager()
 {
+	//Todo: make this deconstuctor acctually work 
 	////if the game manger goes out of scope, we need to delete the areas and interactions
 	//for (auto& area : areas)
 	//{
@@ -189,8 +191,7 @@ void GameManager::moveArea(std::string areaName)
 					temp = currentArea;
 				}
 				currentArea = area;
-				//if the player was in the combat area, we neeed to reroll the difficulty of the combat area
-				//otherwise the player will always win the combat phase
+				//todo:reset the combat area's interaction and reroll numbers
 				return;
 			}
 		}
@@ -218,7 +219,7 @@ void GameManager::displayConnectedAreas()
 		std::cout << area->getAreaName() + ": " + area->getAreaDescription() << std::endl;
 	}
 }
-
+//Start using this function to add danger to the global danger level
 void GameManager::addCulmulativeDanger(int danger)
 {
 	this->culmulativeDanger += danger;

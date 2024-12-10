@@ -27,15 +27,6 @@ void Area::displayInteractions()
 	}
 }
 
-//void Area::completeInteration(std::string interactionName)
-//{
-//	auto interaction = interactions.find(interactionName);
-//	if (interaction == interactions.end())
-//	{
-//		throw std::exception("Interaction not found");
-//	}
-//	interaction->second->completeInteraction();
-//}
 
 void Area::addConnectedArea(Area* connectedArea)
 {
