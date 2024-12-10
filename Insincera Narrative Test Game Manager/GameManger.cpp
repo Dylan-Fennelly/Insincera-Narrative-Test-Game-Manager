@@ -6,10 +6,15 @@ GameManager::GameManager(Area* starterArea)
 {
 	//we need to add the starter area to the areas vector
 	areas.emplace_back(starterArea);
-	int chanceToEscape = rand() % 100 + 1;
-	int chanceToKill = rand() % 100 + 1;
-	Area* combatArea = new Area("Combat Area", 0, 0, chanceToEscape, chanceToEscape, "You are in combat");
-	Interaction* combatInteraction = new Interaction("Fight the enemy", chanceToKill, chanceToKill, 5, "Use your weapon to fight the enemy!");
+	srand(time(0));
+	int chanceToEscapeWorker = rand() % 100 + 1;
+	int chanceToEscapeSoldier = rand() % 100 + 1;
+	int chanceToKillWorker = rand() % 100 + -40;
+	int chanceToKillSoldier = rand() % 100 + -40;
+	chanceToKillWorker = abs(chanceToKillWorker);
+	chanceToKillSoldier = abs(chanceToKillSoldier);
+	Area* combatArea = new Area("Combat Area", 0, 0, chanceToEscapeWorker, chanceToEscapeSoldier, "You are in combat");
+	Interaction* combatInteraction = new Interaction("Fight the enemy", chanceToKillWorker, chanceToKillSoldier, 5, "Use your weapon to fight the enemy!");
 	combatArea->addInteraction(combatInteraction);
 	areas.emplace_back(combatArea);
 }
@@ -123,7 +128,7 @@ void GameManager::completeInteraction(std::string interactionName)
 		if (wasCaught)
 		{
 			// Enter combat phase if caught
-			moveArea("Combat Area");
+			moveToCombatArea(currentArea->getAreaName());
 			
 		}
 		addCulmulativeDanger(interaction->getDangerContribution());
@@ -172,6 +177,7 @@ void GameManager::moveArea(std::string areaName)
 	if (areaName == "Combat Area")
 	{
 		currentArea = findAreaByString("Combat Area");
+		return;
 	}
 	std::cout << "Area not found" << std::endl;
 
@@ -188,7 +194,7 @@ void GameManager::displayConnectedAreas()
 {
 	for (auto& area : currentArea->getConnectedAreas())
 	{
-		std::cout << area->getAreaName() << std::endl;
+		std::cout << area->getAreaName() + ": " + area->getAreaDescription() << std::endl;
 	}
 }
 

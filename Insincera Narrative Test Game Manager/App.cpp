@@ -2,6 +2,7 @@
 #include "Area.h"
 #include "Interaction.h"
 #include "GameManger.h"
+#include "json.hpp"
 int main()
 {
 	Area area("starterArea", 10, 10, 10, 10, "Where the game starts");
@@ -16,7 +17,10 @@ int main()
 	gameManager.displayCurrentArea();
 	gameManager.displayConnectedAreas();
 	gameManager.displayInteractions();
-    std::cout << "Hello World!\n";
+	gameManager.completeInteraction("Fight the enemy");
+	gameManager.displayInteractions();
+
 }
+
 
 

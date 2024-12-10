@@ -28,6 +28,8 @@
     <ClInclude Include="Area.h" />
     <ClInclude Include="GameManger.h" />
     <ClInclude Include="Interaction.h" />
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="json_fwd.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
