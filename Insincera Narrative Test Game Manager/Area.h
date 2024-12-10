@@ -18,7 +18,6 @@ public:
 	~Area();
 	void addInteraction(Interaction* interaction);
 	void displayInteractions();
-	void completeInteration(std::string interactionName);
 	void addConnectedArea(Area* connectedArea);
 
 	
@@ -31,6 +30,9 @@ public:
 	std::string getAreaName();
 	std::vector<Area*> getConnectedAreas();
 	std::map<std::string, Interaction*> getInteractions();
+
+	//setters
+
 
 };
 

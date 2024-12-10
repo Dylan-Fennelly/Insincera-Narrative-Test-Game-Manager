@@ -1,0 +1,59 @@
+{
+  "areas":
+  [
+    {
+      "name": "Cool Area",
+      "entryDetectionChanceWorker": 10,
+      "entryDetectionChanceSoldier": 15,
+      "exitDetectionChanceWorker": 5,
+      "exitDetectionChanceSoldier": 10,
+      "description": "This is where the player begins.",
+      "connectedAreas": ["next Area"],
+      "interactions":
+		[
+			{
+			  "name": "Look Around",
+			  "detectionChanceWorker": 20,
+			  "detectionChanceSoldier": 25,
+			  "dangerContribution": 5,
+			  "description": "You look around the area.",
+			  "exclusiveInteractions": ["Pick up rock"]
+			},
+			{
+			  "name": "Pick up rock",
+			  "detectionChanceWorker": 50,
+			  "detectionChanceSoldier": 50,
+			  "dangerContribution": 2,
+			  "description": "You pick up a rock."
+			}
+      ]
+    },
+	{
+	  "name": "next Area",
+      "entryDetectionChanceWorker": 0,
+      "entryDetectionChanceSoldier": 0,
+      "exitDetectionChanceWorker": 5,
+      "exitDetectionChanceSoldier": 10,
+      "description": "This is where the player nect.",
+      "connectedAreas": [],
+      "interactions":
+		[
+			{
+			  "name": "Look Around",
+			  "detectionChanceWorker": 20,
+			  "detectionChanceSoldier": 25,
+			  "dangerContribution": 5,
+			  "description": "You look around the next  area.",
+			  "exclusiveInteractions": ["Pick up rock"]
+			},
+			{
+			  "name": "Pick up rock",
+			  "detectionChanceWorker": 50,
+			  "detectionChanceSoldier": 50,
+			  "dangerContribution": 2,
+			  "description": "You pick up a rock."
+			}
+      ]	
+	}
+  ]
+}

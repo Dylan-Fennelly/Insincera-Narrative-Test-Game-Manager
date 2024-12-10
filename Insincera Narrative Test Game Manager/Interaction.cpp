@@ -47,6 +47,7 @@ bool Interaction::getIsInteractable()
 	return this->isInteractable;
 }
 
+
 void Interaction::addExclusiveInteraction(Interaction* exclusiveInteraction)
 {
 	exclusiveInteractions.emplace_back(exclusiveInteraction);

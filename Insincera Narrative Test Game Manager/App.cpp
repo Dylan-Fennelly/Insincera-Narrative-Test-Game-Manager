@@ -5,20 +5,33 @@
 #include "json.hpp"
 int main()
 {
-	Area area("starterArea", 10, 10, 10, 10, "Where the game starts");
-	Interaction interaction("Leave the facility", 100, 100, 30, "Leave the facility forever");
-	area.addInteraction(&interaction);
+	Area area("starterArea", 10, 10, 0, 0, "Where the game starts");
+	Interaction escape("Leave the facility", 0, 0, 0, "Leave the facility forever");
+	area.addInteraction(&escape);
 	area.displayInteractions();
+	Interaction lookAround("Look around", 100, 100, 0, "Look around the area");
+	area.addInteraction(&lookAround);
+	
 	GameManager gameManager(&area);
-	gameManager.addInteraction(&interaction);
-	gameManager.displayAreas();
-	gameManager.displayInteractions();
-	gameManager.completeInteraction("Leave the facility");
+	gameManager.addInteraction(&escape);
+	gameManager.addInteraction(&lookAround);
+	//gameManager.displayAreas();
+	//gameManager.displayInteractions();
+	//gameManager.completeInteraction("Leave the facility");
+	//gameManager.displayCurrentArea();
+	//gameManager.displayConnectedAreas();
+	//gameManager.displayInteractions();
+	////gameManager.completeInteraction("Fight the enemy");
+	//gameManager.displayInteractions();
+	//gameManager.loadfromJSON("D:\\C++\\Insincera Narrative Test Game Manager\\game.json");
+	
 	gameManager.displayCurrentArea();
+	gameManager.moveArea("Cool Area");
 	gameManager.displayConnectedAreas();
 	gameManager.displayInteractions();
-	gameManager.completeInteraction("Fight the enemy");
+	gameManager.completeInteraction("Pick up rock");
 	gameManager.displayInteractions();
+
 
 }
 

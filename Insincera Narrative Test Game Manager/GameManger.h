@@ -4,11 +4,13 @@
 #include <vector>
 class GameManager
 {
-public :
+private :
 	std::vector<Area*> areas;
 	std::vector<Interaction*> interactions;
 	Area* currentArea;
 	int culmulativeDanger = 0;
+	bool isGameRunning = true;
+
 
 public:
 	GameManager(Area* starterArea);
@@ -26,9 +28,9 @@ public:
 	void endGame(bool killed);
 	void moveToCombatArea(std::string areaAfterCombat);
 	Area* findAreaByString(std::string areaName);
-
-
+	bool getIsGameRunning();
+	void loadfromJSON(const std::string fileName);
 	
-
+	Interaction* findInteractionByName(std::string interactionName);
 };
 

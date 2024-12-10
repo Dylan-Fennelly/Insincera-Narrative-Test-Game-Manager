@@ -1,6 +1,7 @@
 #include "GameManger.h"
 #include <iostream>
-
+#include <fstream>
+#include "json.hpp"
 GameManager::GameManager(Area* starterArea)
 	:currentArea(starterArea)
 {
@@ -13,10 +14,12 @@ GameManager::GameManager(Area* starterArea)
 	int chanceToKillSoldier = rand() % 100 + -40;
 	chanceToKillWorker = abs(chanceToKillWorker);
 	chanceToKillSoldier = abs(chanceToKillSoldier);
-	Area* combatArea = new Area("Combat Area", 0, 0, chanceToEscapeWorker, chanceToEscapeSoldier, "You are in combat");
+	Area* combatArea = new Area("Combat Area", 0, 0, 0, 0, "You are in combat");
 	Interaction* combatInteraction = new Interaction("Fight the enemy", chanceToKillWorker, chanceToKillSoldier, 5, "Use your weapon to fight the enemy!");
 	combatArea->addInteraction(combatInteraction);
 	areas.emplace_back(combatArea);
+	loadfromJSON("D:\\C++\\Insincera Narrative Test Game Manager\\game.json");
+	currentArea->addConnectedArea(findAreaByString("Cool Area"));
 }
 
 GameManager::~GameManager()
@@ -112,6 +115,7 @@ void GameManager::completeInteraction(std::string interactionName)
 
 	Interaction* interaction = interactionIter->second;
 	bool wasCaught = interaction->completeInteraction();
+	
 
 	if (currentArea->getAreaName() == "Combat Area")
 	{
@@ -121,8 +125,18 @@ void GameManager::completeInteraction(std::string interactionName)
 			std::cout << "Player lost the fight" << std::endl;
 			endGame(true);
 		}
+		else
+		{
+			//the player can move out of the combat area
+			std::cout << "Player won the fight" << std::endl;
+			
+		}
 	}
-	else
+	else if (interactionName == "Leave the facility" && wasCaught==false)
+	{ 
+		endGame(false);
+	}
+	else 
 	{
 		// Handle the case for non-combat interactions
 		if (wasCaught)
@@ -169,7 +183,14 @@ void GameManager::moveArea(std::string areaName)
 			}
 			else
 			{
+				Area* temp = nullptr;
+				if (currentArea->getAreaName() == "Combat Area")
+				{
+					temp = currentArea;
+				}
 				currentArea = area;
+				//if the player was in the combat area, we neeed to reroll the difficulty of the combat area
+				//otherwise the player will always win the combat phase
 				return;
 			}
 		}
@@ -225,6 +246,7 @@ void GameManager::endGame(bool killed)
 		}
 	}
 	std::cout << "Thank you for playing" << std::endl;
+
 }
 
 void GameManager::moveToCombatArea(std::string areaAfterCombat)
@@ -250,4 +272,130 @@ Area* GameManager::findAreaByString(std::string areaName)
 	}
 
 		throw std::exception("Area not found");
+}
+
+bool GameManager::getIsGameRunning()
+{
+	return this->isGameRunning;
+}
+
+void GameManager::loadfromJSON(const std::string fileName)
+{
+	std::ifstream file(fileName);
+	if (!file.is_open())
+	{
+		throw std::runtime_error("Could not open JSON file: " + fileName);
+	}
+
+	nlohmann::json json;
+	file >> json;
+
+	// Temporary cache for unresolved connections
+	std::vector<std::pair<Area*, std::vector<std::string>>> areaConnectionsCache;
+	std::vector<std::pair<Interaction*, std::vector<std::string>>> interactionExclusivesCache;
+
+	// Load areas
+	if (json.contains("areas") && json["areas"].is_array())
+	{
+		for (const auto& areaJson : json["areas"])
+		{
+			// Parse area details
+			std::string name = areaJson.value("name", "Unnamed Area");
+			std::string description = areaJson.value("description", "");
+			int entryWorker = areaJson.value("entryDetectionChanceWorker", 0);
+			int entrySoldier = areaJson.value("entryDetectionChanceSoldier", 0);
+			int exitWorker = areaJson.value("exitDetectionChanceWorker", 0);
+			int exitSoldier = areaJson.value("exitDetectionChanceSoldier", 0);
+
+			// Create the Area object
+			Area* area = new Area(name, entryWorker, entrySoldier, exitWorker, exitSoldier, description);
+			areas.emplace_back(area);
+
+			// Cache connected area names for later linking
+			if (areaJson.contains("connectedAreas") && areaJson["connectedAreas"].is_array())
+			{
+				std::vector<std::string> connectedNames;
+				for (const auto& connectedAreaName : areaJson["connectedAreas"])
+				{
+					connectedNames.push_back(connectedAreaName);
+				}
+				areaConnectionsCache.emplace_back(area, connectedNames);
+			}
+
+			// Parse interactions
+			if (areaJson.contains("interactions") && areaJson["interactions"].is_array())
+			{
+				for (const auto& interactionJson : areaJson["interactions"])
+				{
+					std::string interactionName = interactionJson.value("name", "Unnamed Interaction");
+					std::string interactionDescription = interactionJson.value("description", "");
+					int detectionWorker = interactionJson.value("detectionChanceWorker", 0);
+					int detectionSoldier = interactionJson.value("detectionChanceSoldier", 0);
+					int dangerContribution = interactionJson.value("dangerContribution", 0);
+
+					Interaction* interaction = new Interaction(interactionName, detectionWorker, detectionSoldier, dangerContribution, interactionDescription);
+
+					// Cache exclusive interaction names for later linking
+					if (interactionJson.contains("exclusiveInteractions") && interactionJson["exclusiveInteractions"].is_array())
+					{
+						std::vector<std::string> exclusiveNames;
+						for (const auto& exclusiveName : interactionJson["exclusiveInteractions"])
+						{
+							exclusiveNames.push_back(exclusiveName);
+						}
+						interactionExclusivesCache.emplace_back(interaction, exclusiveNames);
+					}
+
+					area->addInteraction(interaction); // Add interaction to the area
+					interactions.emplace_back(interaction); // Store interaction globally
+				}
+			}
+		}
+	}
+
+	// Resolve and link connected areas
+	for (const auto& [area, connectedNames] : areaConnectionsCache)
+	{
+		for (const std::string& connectedName : connectedNames)
+		{
+			Area* connectedArea = findAreaByString(connectedName);
+			if (connectedArea)
+			{
+				area->addConnectedArea(connectedArea); // Assume this adds the pointer to the connected area
+			}
+			else
+			{
+				std::cerr << "Warning: Connected area '" << connectedName << "' not found for area '" << area->getAreaName() << "'\n";
+			}
+		}
+	}
+
+	// Resolve exclusive interaction pointers
+	for (const auto& [interaction, exclusiveNames] : interactionExclusivesCache)
+	{
+		for (const std::string& exclusiveName : exclusiveNames)
+		{
+			Interaction* exclusiveInteraction = findInteractionByName(exclusiveName);
+			if (exclusiveInteraction)
+			{
+				interaction->addExclusiveInteraction(exclusiveInteraction); // Assuming this method adds a pointer
+			}
+			else
+			{
+				std::cerr << "Warning: Exclusive interaction '" << exclusiveName << "' not found for interaction '" << interaction->getInteractionName() << "'\n";
+			}
+		}
+	}
+}
+
+Interaction* GameManager::findInteractionByName(std::string interactionName)
+{
+	for (auto interaction : interactions)
+	{
+		if (interaction->getInteractionName() == interactionName)
+		{
+			return interaction;
+		}
+	}
+	return nullptr;
 }
