@@ -4,17 +4,17 @@
 #include "GameManger.h"
 #include "json.hpp"
 #include "Utility.h"
+#include "MenuManager.h"
 int main()
 {
-	GameManager gameManager;
-	gameManager.displayCurrentArea();
-//	gameManager.moveArea("Cool Area");
-	gameManager.displayConnectedAreas();
-	gameManager.displayInteractions();
-	gameManager.completeInteraction("Pick up rock");
-	gameManager.displayCurrentArea();
-	gameManager.displayInteractions();
-	/*gameManager.completeInteraction("Fight the enemy");*/
+	GameManager* gameManager = new GameManager();
+	MenuManager menuManager(gameManager);
+
+	while(gameManager->getIsGameRunning())
+	{
+		menuManager.displayMainMenu();
+		menuManager.handlePlayerInput();
+	}
 
 
 }

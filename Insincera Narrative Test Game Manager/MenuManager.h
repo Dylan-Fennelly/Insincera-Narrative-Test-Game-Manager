@@ -8,6 +8,15 @@ private:
 public:
 	MenuManager(GameManager* gameManager);
 	~MenuManager();
+	void displayMainMenu();
+	void handlePlayerInput();
+
+private:
+	void displayAreas();
+	void displayInteractions();
+	void movePlayer();
+	void completeInteraction();
+
 
 };
 

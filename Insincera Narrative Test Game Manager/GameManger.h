@@ -36,10 +36,14 @@ public:
 	Interaction* findInteractionByName(std::string interactionName);
 
 	bool getIsGameRunning();
-	
+
 	void resetCombatArea();
-	void endGame(bool killed);
+	void endGame(bool killed, bool quitGame = false);
 	
+
+	std::vector<Area*> getAreas() const;
+	Area* getCurrentArea() const;
+	int getCulmulativeDanger() const;
 	
 };
 

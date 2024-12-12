@@ -67,7 +67,11 @@ void GameManager::displayAreas()
 		{
 			continue   ;
 		}
-		std::cout << area->getAreaName() << std::endl;
+		auto detectionChance = area->getEntryDetectionChance();
+		std::cout << area->getAreaName()
+			<<" (Detection chance moving to this area: "
+			<< detectionChance.first << "% by workers, "
+			<< detectionChance.second << "% by soldiers.)\n";
 	}
 }
 
@@ -80,11 +84,10 @@ void GameManager::displayInteractions()
 		{
 			hasInteractable = true;
 			auto detectionChance = interaction.second->getDetectionChance();
-			std::cout << " - " << interaction.second->getInteractionName() << ": "
-				<< interaction.second->getInteractionDescription() << "\n"
-				<< "   Chance to get caught: "
+			std::cout << interaction.second->getInteractionName()
+				<< " (Detection Chance: "
 				<< detectionChance.first << "% by workers, "
-				<< detectionChance.second << "% by soldiers.\n";
+				<< detectionChance.second << "% by soldiers.)\n";
 			
 		}
 		
@@ -92,7 +95,7 @@ void GameManager::displayInteractions()
 	}
 	if (!hasInteractable)
 	{
-		std::cout << "No interactions available" << std::endl;
+		std::cout << "No interactions available\n" << std::endl;
 	}
 }
 
@@ -108,6 +111,7 @@ void GameManager::completeInteraction(std::string interactionName)
 
 	Interaction* interaction = interactionIter->second;
 	bool wasCaught = interaction->completeInteraction(culmulativeDanger);
+	std::cout << interaction->getInteractionDescription()<<"\n" << std::endl;
 	
 
 	if (currentArea->getIsCombatArea())
@@ -134,6 +138,7 @@ void GameManager::completeInteraction(std::string interactionName)
 		// Handle the case for non-combat interactions
 		if (wasCaught)
 		{
+			std::cout << "You got caught" << std::endl;
 			// Enter combat phase if caught
 			moveToCombatArea(currentArea->getAreaName());
 			
@@ -163,14 +168,14 @@ void GameManager::moveArea(std::string areaName)
 			//check if the player gets caught
 			auto detectionChance = area->getEntryDetectionChance();
 			auto diceRoll = Utility::generateRandomNumber(0,100);
-			if (diceRoll <= detectionChance.first)
+			if (diceRoll <= detectionChance.first+culmulativeDanger||diceRoll<=detectionChance.second+culmulativeDanger )
 			{
 				//player gets caught
 				//enter combat phase
 				//move player to combat area
 				//if player wins, move player to new area
 				//if player loses, end game
-				std::cout << "Player got caught" << std::endl;
+				std::cout << "Player got caught!\n" << std::endl;
 				//move player to combat area
 				moveToCombatArea(areaName);
 				return;
@@ -225,12 +230,17 @@ void GameManager::addCulmulativeDanger(int danger)
 	this->culmulativeDanger += danger;
 }
 
-void GameManager::endGame(bool killed)
+void GameManager::endGame(bool killed, bool quitGame)
 {
+	isGameRunning = false;
 	if (killed)
 	{
 		std::cout << "Player was killed" << std::endl;
 		std::cout << "Game Over" << std::endl;
+	}
+	else if (quitGame)
+	{
+		std::cout << "Player quit the game" << std::endl;
 	}
 	else
 	{
@@ -248,6 +258,21 @@ void GameManager::endGame(bool killed)
 	}
 	std::cout << "Thank you for playing" << std::endl;
 
+}
+
+std::vector<Area*> GameManager::getAreas() const
+{
+	return this->areas;
+}
+
+Area* GameManager::getCurrentArea() const
+{
+	return this->currentArea;
+}
+
+int GameManager::getCulmulativeDanger() const
+{
+	return culmulativeDanger;
 }
 
 void GameManager::moveToCombatArea(std::string areaAfterCombat)
@@ -420,7 +445,7 @@ void GameManager::resetCombatArea()
 	//we want to reset the existing interaction instead of creating a new one
 	Interaction* combatInteraction = combatArea->getInteractions().at("Fight the enemy");
 	combatInteraction->resetInteraction(chanceToKillWorker, chanceToKillSoldier);
-
+	combatArea->getConnectedAreas().clear();
 }
 
 Interaction* GameManager::findInteractionByName(std::string interactionName)
