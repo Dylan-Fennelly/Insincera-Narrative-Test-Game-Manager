@@ -12,6 +12,7 @@ class Area
 	std::map<std::string, Interaction*> interactions;
 	std::vector<Area*> connectedAreas;
 	int culmulativeDanger = 0;
+	bool isCombatArea = false;
 
 public:
 	Area(std::string areaName, int entryDetectionChanceWorker, int entryDetectionChanceSoldier, int exitDetectionChanceWorker, int exitDetectionChanceSoldier, std::string areaDescription);
@@ -30,8 +31,11 @@ public:
 	std::string getAreaName();
 	std::vector<Area*> getConnectedAreas();
 	std::map<std::string, Interaction*> getInteractions();
-
+	bool getIsCombatArea();
 	//setters
+	void setIsCombatArea(bool isCombatArea);
+	void setEntryDetectionChance(int detectionChanceWorker, int detectionChanceSoldier);
+	void setExitDetectionChance(int detectionChanceWorker, int detectionChanceSoldier);
 
 
 };

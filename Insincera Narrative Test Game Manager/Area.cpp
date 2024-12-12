@@ -16,7 +16,7 @@ Area::~Area()
 
 void Area::addInteraction(Interaction* interaction)
 {
-	interactions.emplace(interaction->getInteractionName(), interaction);
+	this->interactions.emplace(interaction->getInteractionName(), interaction);
 }
 
 void Area::displayInteractions()
@@ -30,24 +30,24 @@ void Area::displayInteractions()
 
 void Area::addConnectedArea(Area* connectedArea)
 {
-	connectedAreas.emplace_back(connectedArea);
+	this->connectedAreas.emplace_back(connectedArea);
 }
 
 
 
 std::pair<int,int> Area::getEntryDetectionChance()
 {
-	return entryDetectionChance;
+	return this->entryDetectionChance;
 }
 
 std::pair<int,int> Area::getExitDetectionChance()
 {
-	return exitDetectionChance;
+	return this->exitDetectionChance;
 }
 
 std::string Area::getAreaDescription()
 {
-	return areaDescription;
+	return this->areaDescription;
 }
 
 std::string Area::getAreaName()
@@ -63,4 +63,24 @@ std::vector<Area*> Area::getConnectedAreas()
 std::map<std::string, Interaction*> Area::getInteractions()
 {
 	return this->interactions;
+}
+
+bool Area::getIsCombatArea()
+{
+	return this->isCombatArea;
+}
+
+void Area::setIsCombatArea(bool isCombatArea)
+{
+	this->isCombatArea = isCombatArea;
+}
+
+void Area::setEntryDetectionChance(int detectionChanceWorker, int detectionChanceSoldier)
+{
+	this->entryDetectionChance = std::make_pair(detectionChanceWorker, detectionChanceSoldier);
+}
+
+void Area::setExitDetectionChance(int detectionChanceWorker, int detectionChanceSoldier)
+{
+	this->exitDetectionChance = std::make_pair(detectionChanceWorker, detectionChanceSoldier);
 }

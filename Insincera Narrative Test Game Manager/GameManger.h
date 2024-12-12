@@ -13,24 +13,33 @@ private :
 
 
 public:
-	GameManager(Area* starterArea);
+	GameManager();
+	GameManager(std::string fileName);
 	~GameManager();
+	void loadfromJSON(const std::string fileName);
 
 	void addArea(Area* area);
 	void addInteraction(Interaction* interaction);
+
 	void displayAreas();
 	void displayInteractions();
-	void completeInteraction(std::string interactionName);
-	void moveArea(std::string areaName);
 	void displayCurrentArea();
 	void displayConnectedAreas();
-	void addCulmulativeDanger(int danger);
-	void endGame(bool killed);
+
+	void completeInteraction(std::string interactionName);
+	void moveArea(std::string areaName);
 	void moveToCombatArea(std::string areaAfterCombat);
-	Area* findAreaByString(std::string areaName);
-	bool getIsGameRunning();
-	void loadfromJSON(const std::string fileName);
+	void addCulmulativeDanger(int danger);
 	
+	
+	Area* findAreaByString(std::string areaName);
 	Interaction* findInteractionByName(std::string interactionName);
+
+	bool getIsGameRunning();
+	
+	void resetCombatArea();
+	void endGame(bool killed);
+	
+	
 };
 

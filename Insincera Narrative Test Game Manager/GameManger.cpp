@@ -2,39 +2,30 @@
 #include <iostream>
 #include <fstream>
 #include "json.hpp"
-//TODO: Fix this constructor to not rely on magic bullshit
-GameManager::GameManager(Area* starterArea)
-	:currentArea(starterArea)
+#include "Utility.h"
+
+GameManager::GameManager()
 {
-	//we need to add the starter area to the areas vector
-	areas.emplace_back(starterArea);
-	srand(time(0));
-	int chanceToEscapeWorker = rand() % 100 + 1;
-	int chanceToEscapeSoldier = rand() % 100 + 1;
-	int chanceToKillWorker = rand() % 100 + -40;
-	int chanceToKillSoldier = rand() % 100 + -40;
-	chanceToKillWorker = abs(chanceToKillWorker);
-	chanceToKillSoldier = abs(chanceToKillSoldier);
-	Area* combatArea = new Area("Combat Area", 0, 0, 0, 0, "You are in combat");
-	Interaction* combatInteraction = new Interaction("Fight the enemy", chanceToKillWorker, chanceToKillSoldier, 5, "Use your weapon to fight the enemy!");
-	combatArea->addInteraction(combatInteraction);
-	areas.emplace_back(combatArea);
 	loadfromJSON("D:\\C++\\Insincera Narrative Test Game Manager\\game.json");
-	currentArea->addConnectedArea(findAreaByString("Cool Area"));
+}
+
+GameManager::GameManager(std::string fileName)
+{
+	loadfromJSON(fileName);
 }
 
 GameManager::~GameManager()
 {
 	//Todo: make this deconstuctor acctually work 
-	////if the game manger goes out of scope, we need to delete the areas and interactions
-	//for (auto& area : areas)
-	//{
-	//	delete area;
-	//}
-	//for (auto& interaction : interactions)
-	//{
-	//	delete interaction;
-	//}
+	//if the game manger goes out of scope, we need to delete the areas and interactions
+	for (auto& area : areas)
+	{
+		delete area;
+	}
+	for (auto& interaction : interactions)
+	{
+		delete interaction;
+	}
 
 }
 
@@ -44,7 +35,7 @@ void GameManager::addArea(Area* area)
 	Area* combatArea = nullptr;
 	for (auto& area : areas)
 	{
-		if (area->getAreaName() == "Combat Area")
+		if (area->getIsCombatArea())
 		{
 			combatArea = area;
 		}
@@ -72,7 +63,7 @@ void GameManager::displayAreas()
 	{
 		//skip displaying the combat area
 		//the player should not be able to move to the combat area on their own
-		if (area->getAreaName() == "Combat Area")
+		if (area->getIsCombatArea())
 		{
 			continue   ;
 		}
@@ -112,14 +103,14 @@ void GameManager::completeInteraction(std::string interactionName)
 	auto interactionIter = interactionsMap.find(interactionName);
 	if (interactionIter == interactionsMap.end())
 	{
-		throw std::exception("Interaction not found");
+		throw std::runtime_error("Interaction '" + interactionName + "' not found in current area");;
 	}
 
 	Interaction* interaction = interactionIter->second;
-	bool wasCaught = interaction->completeInteraction();
+	bool wasCaught = interaction->completeInteraction(culmulativeDanger);
 	
 
-	if (currentArea->getAreaName() == "Combat Area")
+	if (currentArea->getIsCombatArea())
 	{
 		// Handle the case where the player is in the combat area
 		if (wasCaught)
@@ -147,8 +138,9 @@ void GameManager::completeInteraction(std::string interactionName)
 			moveToCombatArea(currentArea->getAreaName());
 			
 		}
-		addCulmulativeDanger(interaction->getDangerContribution());
+		
 	}
+	addCulmulativeDanger(interaction->getDangerContribution());
 }
 
  
@@ -170,7 +162,7 @@ void GameManager::moveArea(std::string areaName)
 		{
 			//check if the player gets caught
 			auto detectionChance = area->getEntryDetectionChance();
-			auto diceRoll = rand() % 100 + 1;
+			auto diceRoll = Utility::generateRandomNumber(0,100);
 			if (diceRoll <= detectionChance.first)
 			{
 				//player gets caught
@@ -186,12 +178,12 @@ void GameManager::moveArea(std::string areaName)
 			else
 			{
 				Area* temp = nullptr;
-				if (currentArea->getAreaName() == "Combat Area")
+				if (currentArea->getIsCombatArea())
 				{
 					temp = currentArea;
 				}
 				currentArea = area;
-				//todo:reset the combat area's interaction and reroll numbers
+				resetCombatArea();
 				return;
 			}
 		}
@@ -201,7 +193,15 @@ void GameManager::moveArea(std::string areaName)
 		currentArea = findAreaByString("Combat Area");
 		return;
 	}
-	std::cout << "Area not found" << std::endl;
+	if (areaName == currentArea->getAreaName())
+	{
+		std::cout << "You are already in this area" << std::endl;
+		return;
+	}
+	else
+	{
+		std::cout << "Area: " + areaName + "  not found" << std::endl;
+	};
 
 
 }
@@ -310,6 +310,14 @@ void GameManager::loadfromJSON(const std::string fileName)
 
 			// Create the Area object
 			Area* area = new Area(name, entryWorker, entrySoldier, exitWorker, exitSoldier, description);
+			if (areaJson.value("starterArea", false))
+			{
+				currentArea = area;
+			}
+			if (areaJson.value("combatArea", false))
+			{
+				area->setIsCombatArea(true);
+			}
 			areas.emplace_back(area);
 
 			// Cache connected area names for later linking
@@ -387,6 +395,32 @@ void GameManager::loadfromJSON(const std::string fileName)
 			}
 		}
 	}
+}
+
+void GameManager::resetCombatArea()
+{
+	Area* combatArea = nullptr;
+	for (auto& area : areas)
+	{
+		if (area->getIsCombatArea())
+		{
+			combatArea = area;
+		}
+	}
+	if (combatArea == nullptr)
+	{
+		throw std::exception("Combat Area not found");
+	}
+	//reset the combat area's interaction and reroll numbers
+	int chanceToKillWorker = Utility::generateRandomNumber(0, 100);
+	int chanceToKillSoldier = Utility::generateRandomNumber(0, 100);
+	int chanceToEscapeWorker = Utility::generateRandomNumber(0, 100);
+	int chanceToEscapeSoldier = Utility::generateRandomNumber(0, 100);
+	combatArea->setExitDetectionChance(chanceToEscapeWorker, chanceToEscapeSoldier);
+	//we want to reset the existing interaction instead of creating a new one
+	Interaction* combatInteraction = combatArea->getInteractions().at("Fight the enemy");
+	combatInteraction->resetInteraction(chanceToKillWorker, chanceToKillSoldier);
+
 }
 
 Interaction* GameManager::findInteractionByName(std::string interactionName)

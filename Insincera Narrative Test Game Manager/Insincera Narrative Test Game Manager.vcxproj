@@ -23,6 +23,8 @@
     <ClCompile Include="Area.cpp" />
     <ClCompile Include="GameManger.cpp" />
     <ClCompile Include="Interaction.cpp" />
+    <ClCompile Include="MenuManager.cpp" />
+    <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Area.h" />
@@ -30,6 +32,8 @@
     <ClInclude Include="Interaction.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="json_fwd.hpp" />
+    <ClInclude Include="MenuManager.h" />
+    <ClInclude Include="Utility.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

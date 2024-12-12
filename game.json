@@ -8,6 +8,7 @@
       "exitDetectionChanceWorker": 5,
       "exitDetectionChanceSoldier": 10,
       "description": "This is where the player begins.",
+	  "starterArea": true,
       "connectedAreas": ["next Area"],
       "interactions":
 		[
@@ -52,6 +53,27 @@
 			  "detectionChanceSoldier": 50,
 			  "dangerContribution": 2,
 			  "description": "You pick up a rock."
+			}
+      ]	
+	},
+	{
+	  "name": "Combat Area",
+      "entryDetectionChanceWorker": 0,  
+      "entryDetectionChanceSoldier": 0,
+      "exitDetectionChanceWorker": 0,
+      "exitDetectionChanceSoldier": 0,
+      "description": "You are in combat.",
+	  "combatArea" : true,
+      "connectedAreas": [],
+      "interactions":
+		[
+			{
+			  "name": "Fight the enemy",
+			  "detectionChanceWorker": 10,
+			  "detectionChanceSoldier": 15,
+			  "dangerContribution": 5,
+			  "description": "Fight for your life.",
+			  "exclusiveInteractions": []
 			}
       ]	
 	}

@@ -1,5 +1,5 @@
 #include "Interaction.h"
-
+#include "Utility.h"
 
 Interaction::Interaction(std::string interactionName,int detectionChanceWorker,int detectionChanceSoldier, int dangerContribution, std::string interactionDescription)
 	:interactionName(interactionName),
@@ -47,13 +47,18 @@ bool Interaction::getIsInteractable()
 	return this->isInteractable;
 }
 
+int Interaction::getNumberOfTimesInteracted()
+{
+	return this->numberOfTimesInteracted;
+}
+
 
 void Interaction::addExclusiveInteraction(Interaction* exclusiveInteraction)
 {
 	exclusiveInteractions.emplace_back(exclusiveInteraction);
 }
-//Todo: this feels messy and the random number generation should be tider, maybe it should be given to a utility class
-bool Interaction::completeInteraction()
+
+bool Interaction::completeInteraction(int culmativeDanger)
 {
 	if (!isInteractable)
 	{
@@ -61,29 +66,35 @@ bool Interaction::completeInteraction()
 	}
 	setInteractionCompleted(true);
 	setIsInteractable(false);
-	
+	incrementNumberOfTimesInteracted();
 
 	for (auto& interaction : exclusiveInteractions)
 	{
 		interaction->setIsInteractable(false);
 	}
-	//true if the interaction was completed without being caught
-
 
 	// Generate two separate dice rolls
-	int diceRollWorker = rand() % 100 + 1;
-	int diceRollSoldier = rand() % 100 + 1;
+	int diceRollWorker = Utility::generateRandomNumber(0,100);
+	int diceRollSoldier = Utility::generateRandomNumber(0, 100);
 
 	// Check if caught by either group
-	bool caughtByWorker = diceRollWorker <= detectionChance.first;
-	bool caughtBySoldier = diceRollSoldier <= detectionChance.second;
+	bool caughtByWorker = diceRollWorker <= detectionChance.first +culmativeDanger;
+	bool caughtBySoldier = diceRollSoldier <= detectionChance.second +culmativeDanger;
 
-	if (caughtByWorker || caughtBySoldier) {
-		return true; // Player was caught
-	}
+	return caughtByWorker || caughtBySoldier;
 
-	return false; // Interaction completed while being caught
+}
 
+void Interaction::incrementNumberOfTimesInteracted()
+{
+	numberOfTimesInteracted++;
+}
+
+void Interaction::resetInteraction(int detectionChanceWorker, int detectionChanceSoldier)
+{
+	setInteractionCompleted(false);
+	setIsInteractable(true);
+	detectionChance = std::make_pair(detectionChanceWorker, detectionChanceSoldier);
 }
 
 void Interaction::setInteractionCompleted(bool interactionCompleted)
