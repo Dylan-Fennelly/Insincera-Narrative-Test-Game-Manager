@@ -26,6 +26,13 @@
 			  "detectionChanceSoldier": 50,
 			  "dangerContribution": 2,
 			  "description": "You pick up a rock."
+			},
+			{
+				"name": "Leave the facility",
+				"detectionChanceWorker": 0,
+				"detectionChanceSoldier": 0,
+				"dangerContribution": 0,
+				"description": "You managed to escape the facility"
 			}
       ]
     },

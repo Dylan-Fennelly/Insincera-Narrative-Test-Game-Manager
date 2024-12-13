@@ -6,7 +6,7 @@
 
 GameManager::GameManager()
 {
-	loadfromJSON("D:\\C++\\Insincera Narrative Test Game Manager\\game.json");
+	loadfromJSON("D:\\c++\\Insincera-Narrative-Test-Game-Manager\\game.json");
 }
 
 GameManager::GameManager(std::string fileName)

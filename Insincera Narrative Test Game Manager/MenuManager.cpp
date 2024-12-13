@@ -107,9 +107,19 @@ void MenuManager::completeInteraction()
         if (!interactionPair.second->getIsInteractable()) {
             continue;
         }
-        std::cout << index++ << ". " << interactionPair.second->getInteractionName() << " (Detection Chance: "
-            << interactionPair.second->getDetectionChance().first << "% by workers, "
-            << interactionPair.second->getDetectionChance().second << "% by soldiers.)\n";
+        if (interactionPair.second->getInteractionName() == "Fight the enemy")
+        {
+            std::cout << index++ << ". " << interactionPair.second->getInteractionName() << " (Chance to kill: "
+                << interactionPair.second->getDetectionChance().first << "% the workers, "
+                << interactionPair.second->getDetectionChance().second << "% the soldiers.)\n";
+        }
+        else
+        {
+            std::cout << index++ << ". " << interactionPair.second->getInteractionName() << " (Detection Chance: "
+                << interactionPair.second->getDetectionChance().first << "% by workers, "
+                << interactionPair.second->getDetectionChance().second << "% by soldiers.)\n";
+        }
+
         interactableKeys.push_back(interactionPair.first); // Store only interactable keys
     }
 
