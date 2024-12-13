@@ -55,7 +55,7 @@ std::string Area::getAreaName()
 	return this->areaName;
 }
 
-std::vector<Area*> Area::getConnectedAreas()
+std::vector<Area*>& Area::getConnectedAreas()
 {
 	return this->connectedAreas;
 }

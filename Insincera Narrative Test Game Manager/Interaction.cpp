@@ -75,13 +75,13 @@ bool Interaction::completeInteraction(int culmativeDanger)
 
 	// Generate two separate dice rolls
 	int diceRollWorker = Utility::generateRandomNumber(0,100);
-	int diceRollSoldier = Utility::generateRandomNumber(0, 100);
+	//int diceRollSoldier = Utility::generateRandomNumber(0, 100);
 
 	// Check if caught by either group
 	bool caughtByWorker = diceRollWorker <= detectionChance.first +culmativeDanger;
-	bool caughtBySoldier = diceRollSoldier <= detectionChance.second +culmativeDanger;
+	//bool caughtBySoldier = diceRollSoldier <= detectionChance.second +culmativeDanger;
 
-	return caughtByWorker || caughtBySoldier;
+	return caughtByWorker;
 
 }
 

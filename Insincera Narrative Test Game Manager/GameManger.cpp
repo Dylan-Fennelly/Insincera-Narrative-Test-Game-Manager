@@ -6,7 +6,7 @@
 
 GameManager::GameManager()
 {
-	loadfromJSON("D:\\c++\\Insincera-Narrative-Test-Game-Manager\\game.json");
+	loadfromJSON("D:\\C++\\Insincera Narrative Test Game Manager\\game2.json");
 }
 
 GameManager::GameManager(std::string fileName)
@@ -57,7 +57,7 @@ void GameManager::addInteraction(Interaction* interaction)
 void GameManager::displayAreas()
 {
 	auto currentAreaName = currentArea->getAreaName();
-	std::cout << "Current Area: " + currentAreaName << std::endl;
+	std::cout << "Current Area: " + currentAreaName <<" - "<<currentArea->getAreaDescription()<<"\n" << std::endl;
 	std::cout << "Connected Areas: " << std::endl;
 	for (auto& area : currentArea->getConnectedAreas())
 	{
@@ -65,13 +65,12 @@ void GameManager::displayAreas()
 		//the player should not be able to move to the combat area on their own
 		if (area->getIsCombatArea())
 		{
-			continue   ;
+			continue;
 		}
 		auto detectionChance = area->getEntryDetectionChance();
 		std::cout << area->getAreaName()
 			<<" (Detection chance moving to this area: "
-			<< detectionChance.first << "% by workers, "
-			<< detectionChance.second << "% by soldiers.)\n";
+			<< std::min((detectionChance.first+getCulmulativeDanger()), 100) << "%)\n";
 	}
 }
 
@@ -86,8 +85,7 @@ void GameManager::displayInteractions()
 			auto detectionChance = interaction.second->getDetectionChance();
 			std::cout << interaction.second->getInteractionName()
 				<< " (Detection Chance: "
-				<< detectionChance.first << "% by workers, "
-				<< detectionChance.second << "% by soldiers.)\n";
+				<< std::min((detectionChance.first +getCulmulativeDanger()), 100) << "%)\n";
 			
 		}
 		
@@ -121,15 +119,18 @@ void GameManager::completeInteraction(std::string interactionName)
 		{
 			std::cout << "Player lost the fight" << std::endl;
 			endGame(true);
+			return;
 		}
 		else
 		{
+
 			//the player can move out of the combat area
 			std::cout << "Player won the fight" << std::endl;
+			moveArea(currentArea->getConnectedAreas()[0]->getAreaName(), true);
 			
 		}
 	}
-	else if (interactionName == "Leave the facility" && wasCaught==false)
+	else if (interactionName == "Leave the facility")
 	{ 
 		endGame(false);
 	}
@@ -149,7 +150,7 @@ void GameManager::completeInteraction(std::string interactionName)
 }
 
  
-void GameManager::moveArea(std::string areaName)
+void GameManager::moveArea(std::string areaName, bool beatTheEnemy)
 {
 	//We need to check if the area the player wants to move to is connected to the current area
 	//We also need to check if the risk  of moving and calculate the risk of moving to the new area
@@ -165,10 +166,17 @@ void GameManager::moveArea(std::string areaName)
 	{
 		if (area->getAreaName() == areaName)
 		{
+			if (beatTheEnemy)
+			{
+				//if the player beat the enemy, we can move the player to the new area
+				currentArea = area;
+				resetCombatArea();
+				return;
+			}
 			//check if the player gets caught
 			auto detectionChance = area->getEntryDetectionChance();
-			auto diceRoll = Utility::generateRandomNumber(0,100);
-			if (diceRoll <= detectionChance.first+culmulativeDanger||diceRoll<=detectionChance.second+culmulativeDanger )
+			auto diceRoll = Utility::generateRandomNumber(0,100); 
+			if (diceRoll <= detectionChance.first+culmulativeDanger)
 			{
 				//player gets caught
 				//enter combat phase
@@ -182,11 +190,6 @@ void GameManager::moveArea(std::string areaName)
 			}
 			else
 			{
-				Area* temp = nullptr;
-				if (currentArea->getIsCombatArea())
-				{
-					temp = currentArea;
-				}
 				currentArea = area;
 				resetCombatArea();
 				return;
@@ -253,7 +256,7 @@ void GameManager::endGame(bool killed, bool quitGame)
 	{
 		if (interaction->getInteractionCompleted())
 		{
-			std::cout << interaction->getInteractionName() << std::endl;
+			std::cout << interaction->getInteractionName() <<" - No. of interactions:" << interaction->getNumberOfTimesInteracted() << std::endl;
 		}
 	}
 	std::cout << "Thank you for playing" << std::endl;
@@ -437,14 +440,14 @@ void GameManager::resetCombatArea()
 		throw std::exception("Combat Area not found");
 	}
 	//reset the combat area's interaction and reroll numbers
-	int chanceToKillWorker = Utility::generateRandomNumber(0, 100);
+	int chanceToBeKilledWorker = Utility::generateRandomNumber(0, 25);
 	int chanceToKillSoldier = Utility::generateRandomNumber(0, 100);
 	int chanceToEscapeWorker = Utility::generateRandomNumber(0, 100);
 	int chanceToEscapeSoldier = Utility::generateRandomNumber(0, 100);
 	combatArea->setExitDetectionChance(chanceToEscapeWorker, chanceToEscapeSoldier);
 	//we want to reset the existing interaction instead of creating a new one
 	Interaction* combatInteraction = combatArea->getInteractions().at("Fight the enemy");
-	combatInteraction->resetInteraction(chanceToKillWorker, chanceToKillSoldier);
+	combatInteraction->resetInteraction(chanceToBeKilledWorker, chanceToKillSoldier);
 	combatArea->getConnectedAreas().clear();
 }
 

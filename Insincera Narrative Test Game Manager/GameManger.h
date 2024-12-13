@@ -27,7 +27,7 @@ public:
 	void displayConnectedAreas();
 
 	void completeInteraction(std::string interactionName);
-	void moveArea(std::string areaName);
+	void moveArea(std::string areaName, bool beatTheEnemy = false);
 	void moveToCombatArea(std::string areaAfterCombat);
 	void addCulmulativeDanger(int danger);
 	

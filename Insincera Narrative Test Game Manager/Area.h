@@ -29,7 +29,7 @@ public:
 	std::pair<int, int> getExitDetectionChance();
 	std::string getAreaDescription();
 	std::string getAreaName();
-	std::vector<Area*> getConnectedAreas();
+	std::vector<Area*>& getConnectedAreas();
 	std::map<std::string, Interaction*> getInteractions();
 	bool getIsCombatArea();
 	//setters

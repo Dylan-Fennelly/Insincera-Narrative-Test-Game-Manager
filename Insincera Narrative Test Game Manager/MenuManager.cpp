@@ -1,6 +1,6 @@
 #include "MenuManager.h"
 #include <iostream>
-
+#include <algorithm>
 MenuManager::MenuManager(GameManager* gameManager) :gameManager(gameManager)
 {
 
@@ -63,8 +63,7 @@ void MenuManager::movePlayer()
     {
         std::cout << i + 1 << ". " << areas[i]->getAreaName() <<
             " (Detection Chance: "
-            << areas[i]->getEntryDetectionChance().first << "% by workers, "
-            << areas[i]->getEntryDetectionChance().second << "% by soldiers.)\n";
+            << std::min((areas[i]->getEntryDetectionChance().first+gameManager->getCulmulativeDanger()),100)<< "%)\n";
     }
 
     // Display the Back option
@@ -109,15 +108,15 @@ void MenuManager::completeInteraction()
         }
         if (interactionPair.second->getInteractionName() == "Fight the enemy")
         {
-            std::cout << index++ << ". " << interactionPair.second->getInteractionName() << " (Chance to kill: "
-                << interactionPair.second->getDetectionChance().first << "% the workers, "
-                << interactionPair.second->getDetectionChance().second << "% the soldiers.)\n";
+            std::cout << index++ << ". " << interactionPair.second->getInteractionName() <<
+                " (Chance to be killed: "
+                << std::min((interactionPair.second->getDetectionChance().first +gameManager->getCulmulativeDanger()), 100) << "%)\n";
         }
         else
         {
-            std::cout << index++ << ". " << interactionPair.second->getInteractionName() << " (Detection Chance: "
-                << interactionPair.second->getDetectionChance().first << "% by workers, "
-                << interactionPair.second->getDetectionChance().second << "% by soldiers.)\n";
+            std::cout << index++ << ". " << interactionPair.second->getInteractionName() <<
+                " (Detection Chance: "
+                << std::min((interactionPair.second->getDetectionChance().first +gameManager->getCulmulativeDanger()), 100) << "%)\n";
         }
 
         interactableKeys.push_back(interactionPair.first); // Store only interactable keys

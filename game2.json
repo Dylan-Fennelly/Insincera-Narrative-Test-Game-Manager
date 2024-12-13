@@ -1,0 +1,178 @@
+{
+	"areas": [
+		
+		{
+			"name": "Docks",
+			"entryDetectionChanceWorker": 10,
+			"entryDetectionChanceSoldier": 15,
+			"exitDetectionChanceWorker": 5,
+			"exitDetectionChanceSoldier": 10,
+			"description": "This is where you begin your infiltration assignment. You maneuver between some crates to get the hang of your weapon, but you see nothing that would help you completing the mission. Your only two options are to move out to reach the outside of the facility, or to go back to the opposition encampment.",
+			"starterArea": true,
+			"connectedAreas": [ "Outside the Facility" ],
+			"interactions": [
+				{
+					"name": "Leave the facility",
+					"detectionChanceWorker": 0,
+					"detectionChanceSoldier": 0,
+					"dangerContribution": 0,
+					"description": "You managed to escape the facility"
+				}
+			]
+		},
+
+		{
+			"name": "Outside the Facility",
+			"entryDetectionChanceWorker": 0,
+			"entryDetectionChanceSoldier": 0,
+			"exitDetectionChanceWorker": 5,
+			"exitDetectionChanceSoldier": 10,
+			"description": "You find yourself just outside of the factory. You see a storage, where they probably store the drug. You can dump it. On the other hand, you notice valves that could be closed to accumulate pressure. Also, there is an option of damaging the outside machinery. Finally, you can overcharge/turn off the power supply. Do not forget that you can either go inside and check out what's going on in there or simply leave.",
+			"connectedAreas": [ "Docks", "Inside the Facility" ],
+			"interactions": [
+				{
+					"name": "Dump Storage",
+					"detectionChanceWorker": 30,
+					"detectionChanceSoldier": 30,
+					"dangerContribution": 5,
+					"description": "You managed to get rid of a solid portion of the drug. Workers and soldiers might notice it."
+				},
+				{
+					"name": "Close Valve",
+					"detectionChanceWorker": 25,
+					"detectionChanceSoldier": 15,
+					"dangerContribution": 5,
+					"description": "You managed to close the valve. That might draw unwanted attention."
+				},
+				{
+					"name": "Damage Machinery",
+					"detectionChanceWorker": 40,
+					"detectionChanceSoldier": 20,
+					"dangerContribution": 20,
+					"description": "You managed to damage the machinery outside. People might notice."
+				},
+				{
+					"name": "Overcharge Power Supply",
+					"detectionChanceWorker": 35,
+					"detectionChanceSoldier": 20,
+					"dangerContribution": 10,
+					"description": "You managed to overcharge the power supply. That might lead to the destruction of the facility.",
+					"exclusiveInteractions": [ "Turn Off Power Supply" ]
+				},
+				{
+					"name": "Turn Off Power Supply",
+					"detectionChanceWorker": 25,
+					"detectionChanceSoldier": 15,
+					"dangerContribution": 20,
+					"description": "You managed to overcharge the power supply. That might lead to the destruction of the facility.",
+					"exclusiveInteractions": [ "Overcharge Power Supply" ]
+				}1
+			]
+		},
+
+		{
+			"name": "Inside the Facility",
+			"entryDetectionChanceWorker": 25,
+			"entryDetectionChanceSoldier": 25,
+			"exitDetectionChanceWorker": 5,
+			"exitDetectionChanceSoldier": 10,
+			"description": "You  managed to get inside. Now, you have an option of turning off/altering the propaganda. You can also go either to the labs or to the vent section of the building.",
+			"connectedAreas": [ "Outside the Facility", "Lab", "Vents" ],
+			"interactions": [
+				{
+					"name": "Turn Off Propaganda",
+					"detectionChanceWorker": 20,
+					"detectionChanceSoldier": 20,
+					"dangerContribution": 10,
+					"description": "You turned the propaganda off. Somebody will definitely notice that.",
+					"exclusiveInteractions": [ "Alter Propaganda" ]
+				},
+				{
+					"name": "Alter Propaganda",
+					"detectionChanceWorker": 20,
+					"detectionChanceSoldier": 20,
+					"dangerContribution": 20,
+					"description": "You altered the output of the speakers. Somebody will come here to fix it.",
+					"exclusiveInteractions": [ "Turn Off Propaganda" ]
+				}
+			]
+		},
+
+		{
+			"name": "Lab",
+			"entryDetectionChanceWorker": 40,
+			"entryDetectionChanceSoldier": 40,
+			"exitDetectionChanceWorker": 5,
+			"exitDetectionChanceSoldier": 10,
+			"description": "You  are in the labs. You can either steal or destroy the notes & databases. You can also go back to the main halls of the factory.",
+			"connectedAreas": [ "Inside the Facility" ],
+			"interactions": [
+				{
+					"name": "Steal Notes & Data",
+					"detectionChanceWorker": 5,
+					"detectionChanceSoldier": 5,
+					"dangerContribution": 0,
+					"description": "You took the notes & data. Maybe you should bring them back to the encampment?",
+					"exclusiveInteractions": [ "Destroy Notes & Data" ]
+				},
+				{
+					"name": "Destroy Notes & Data",
+					"detectionChanceWorker": 5,
+					"detectionChanceSoldier": 5,
+					"dangerContribution": 0,
+					"description": "You destoyed all evidence. Rebels in the camp might not like it.",
+					"exclusiveInteractions": [ "Steal Notes & Data" ]
+				}
+			]
+		},
+
+		{
+			"name": "Vents",
+			"entryDetectionChanceWorker": 20,
+			"entryDetectionChanceSoldier": 20,
+			"exitDetectionChanceWorker": 5,
+			"exitDetectionChanceSoldier": 10,
+			"description": "You  are in the vents. You can either turn them off or make them malfunction, so the drug gets accumulated. You can also go back to the main halls of the factory.",
+			"connectedAreas": [ "Inside the Facility" ],
+			"interactions": [
+				{
+					"name": "Turn Off Vents",
+					"detectionChanceWorker": 10,
+					"detectionChanceSoldier": 10,
+					"dangerContribution": 10,
+					"description": "You turned ventilation off. Hopefully, nobody will come here within the next couple of minutes.",
+					"exclusiveInteractions": [ "Malfunction Vents" ]
+				},
+				{
+					"name": "Malfunction Vents",
+					"detectionChanceWorker": 25,
+					"detectionChanceSoldier": 25,
+					"dangerContribution": 5,
+					"description": "You made the vents malfunction. The drug will accumulate inside.",
+					"exclusiveInteractions": [ "Turn Off Vents" ]
+				}
+			]
+		},
+
+		{
+			"name": "Combat Area",
+			"entryDetectionChanceWorker": 0,
+			"entryDetectionChanceSoldier": 0,
+			"exitDetectionChanceWorker": 0,
+			"exitDetectionChanceSoldier": 0,
+			"description": "You are in combat.",
+			"combatArea": true,
+			"connectedAreas": [],
+			"interactions": [
+				{
+					"name": "Fight the enemy",
+					"detectionChanceWorker": 10,
+					"detectionChanceSoldier": 15,
+					"dangerContribution": 5,
+					"description": "Fight for your life.",
+					"exclusiveInteractions": []
+				}
+			]
+		}
+	]
+}
