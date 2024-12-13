@@ -1,4 +1,4 @@
-Notes for writting the Json
+# Notes for writting the Json
 * Don't modify the Combat area
 * Don't modify the leave facility interaction - make sure it is present in any areas where the player is able to leave the facility 
 * Make sure that areas are linked to all of their connected areas - both foward and back 
